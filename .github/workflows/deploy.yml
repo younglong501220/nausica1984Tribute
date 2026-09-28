@@ -1,0 +1,58 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+# 設定 GitHub Pages 發布所需的權限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 避免多個並行部署互相干擾
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 設定 Node.js 22 環境（移除強制依賴 package-lock.json 的快取設定，避免快取檢驗失敗）
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 使用 --legacy-peer-deps 徹底避免套件版本衝突失敗，即使無 package-lock.json 亦能順暢安裝
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      # 執行 Vite 靜態建置輸出至 dist 目錄
+      - name: Build project
+        run: npm run build
+
+      # 配置 GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 上傳 dist 建置成品
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      # 發布到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

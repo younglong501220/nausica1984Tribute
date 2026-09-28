@@ -1,0 +1,6 @@
+{
+  "name": "風之谷：王蟲的襲擊 1984 (Nausicaä 1984 Tribute)",
+  "description": "致敬 1984 年 PC-8801 / MSX 經典電腦名作《風之谷：王蟲的襲擊》的 8-Bit 復古電氣風格守護防線動作遊戲。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
